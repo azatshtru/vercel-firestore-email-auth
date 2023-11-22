@@ -1,8 +1,9 @@
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import parse_qsl
 
-from _firebase import generate_auth_id, create_document
+from _firebase import firebase
 from _utils import *
+from _config import firebase_config, email_config
 
 class handler(BaseHTTPRequestHandler):
 
@@ -19,14 +20,15 @@ class handler(BaseHTTPRequestHandler):
         reciever_email = kv['email']
 
         #generate authcode and store it in firestore under serverauth/{reciever_email} document
+        f = firebase(firebase_config=firebase_config())
         authcode = generate_random_authcode()
-        token_id = generate_auth_id('serveradmin', { 'admin': True })
-        create_document(id_token=token_id, db_name='dash-12112', collection_path='serverauth', 
+        token_id = f.generate_auth_id('serveradmin', claims={ 'admin': True })
+        f.create_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], 
                         document_id=f'{reciever_email}', data={ 'authcode': authcode })
 
         #send the authcode to the reciever_email
         service_name = 'discipline observer'
-        message = authmail_template(authcode=authcode, service_name=service_name, reciever_address=reciever_email)
-        send_email(sender_email=sender_email, reciever_email=reciever_email, body=message)
+        message = authmail_template(authcode=authcode, service_name=service_name, sender_address=email_config()['sender_email'], reciever_address=reciever_email)
+        send_email(emailconfig=email_config(), reciever_email=reciever_email, body=message)
 
         return

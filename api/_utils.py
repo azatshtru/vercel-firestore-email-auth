@@ -5,25 +5,19 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-import os
-
-sender_email = os.environ.get('SENDER_EMAIL')
-email_port = os.environ.get('EMAIL_PORT')
-email_password = os.environ.get('EMAIL_PASSWORD')
-
 def generate_random_authcode():
     return ''.join(random.choices('0123456789', k=6))
 
-def send_email(reciever_email, body):
+def send_email(emailconfig, reciever_email, body):
     context = ssl.create_default_context()
-    with smtplib.SMTP_SSL("smtp.gmail.com", email_port, context=context) as server:
-        server.login(sender_email, password=email_password)
-        server.sendmail(sender_email, reciever_email, body)
+    with smtplib.SMTP_SSL("smtp.gmail.com", emailconfig['port'], context=context) as server:
+        server.login(emailconfig['sender_email'], password=emailconfig['password'])
+        server.sendmail(emailconfig['sender_email'], reciever_email, body)
 
-def authmail_template(authcode, service_name, reciever_address):
-    message = MIMEMultipart('')
+def authmail_template(authcode, service_name, sender_address, reciever_address):
+    message = MIMEMultipart('alternative')
     message['Subject'] = f'Here is your login code for {service_name}.'
-    message['From'] = sender_email
+    message['From'] = sender_address
     message['To'] = reciever_address
 
     text = f"""\
