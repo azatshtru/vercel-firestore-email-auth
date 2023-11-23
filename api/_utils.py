@@ -23,18 +23,18 @@ def authmail_template(authcode, service_name, sender_address, reciever_address):
     text = f"""\
 Your login code is: {authcode}.
 
-If you did not request this code, you can safely ignore this email. However it is possible that your mail-info was leaked, check haveibeenpwned.com for potential pwnages.
+This email is sent by the cultofplaintext on behalf of {service_name}.
 
-This email is sent on behalf of {service_name} by the cultofplaintext."""
+If you did not request this code, you can safely ignore this email. However it is possible that your mail-info was leaked, check haveibeenpwned.com for potential pwnages."""
 
     html = f"""\
 <html>
     <body>
         <h3>Your login code is:</h3>
         <h1>{authcode}</h1>
+        <p>This email is sent by the cultofplaintext on behalf of {service_name}.</p>
         <br>
         <p>If you did not request this code, you can safely ignore this email. However it is possible that your mail-info was leaked, check haveibeenpwned.com for potential pwnages.</p>
-        <p>This email is sent on behalf of {service_name} by the cultofplaintext.</p>
     </body>
 </html>"""
 

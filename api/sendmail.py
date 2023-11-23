@@ -23,8 +23,10 @@ class handler(BaseHTTPRequestHandler):
         f = firebase(firebase_config=firebase_config())
         authcode = generate_random_authcode()
         token_id = f.generate_auth_id('serveradmin', claims={ 'admin': True })
-        f.create_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], 
-                        document_id=f'{reciever_email}', data={ 'authcode': authcode })
+        f.delete_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}')
+        f.create_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}', data={ 'authcode': authcode })
+        doc = f.get_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}')
+        print(doc)
 
         #send the authcode to the reciever_email
         service_name = 'discipline observer'

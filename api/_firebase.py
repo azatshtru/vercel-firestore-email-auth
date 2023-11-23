@@ -55,3 +55,30 @@ class firebase():
             }
         )
         return r.text
+
+    def firestore_deparse_data(self, data):
+        deparsed_data = {}
+        data = json.loads(data)['fields']
+        for k in data:
+            if data[k].get('stringValue'):
+                deparsed_data[k] = data[k].get('stringValue')
+        return deparsed_data
+
+    def get_document(self, id_token, db_name, collection_path, document_id):
+        r = requests.get(
+            f"https://firestore.googleapis.com/v1/projects/{db_name}/databases/(default)/documents/{'/'.join(collection_path)}/{document_id}?key={self.api_key}",
+            headers={
+                'Authorization': f'Bearer {id_token}',
+                'Accept': 'application/json'
+            }
+        )
+        return self.firestore_deparse_data(r.text)
+
+    def delete_document(self, id_token, db_name, collection_path, document_id):
+        r = requests.delete(
+            f"https://firestore.googleapis.com/v1/projects/{db_name}/databases/(default)/documents/{'/'.join(collection_path)}/{document_id}?key={self.api_key}",
+            headers={
+                'Authorization': f'Bearer {id_token}',
+                'Accept': 'application/json'
+            }
+        )
