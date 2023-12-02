@@ -12,6 +12,7 @@ class handler(BaseHTTPRequestHandler):
         #send headers
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*') #change with website name after testing
         self.end_headers()
 
         #read authcode from request body
@@ -29,7 +30,7 @@ class handler(BaseHTTPRequestHandler):
         #check if stored authcode matches the request's authcode
         if authcode == str(doc['authcode']):
             f.delete_document(token_id, 'dash-12112', ['serverauth'], document_id=f'{reciever_email}')
-            user_token = f.generate_auth_id(reciever_email)
-            self.wfile.write(json.dumps(user_token))
+            user_token = f.create_custom_token(reciever_email)
+            self.wfile.write(json.dumps({"token":user_token}).encode('utf-8'))
         
         return
