@@ -32,5 +32,7 @@ class handler(BaseHTTPRequestHandler):
             f.delete_document(token_id, 'dash-12112', ['serverauth'], document_id=f'{reciever_email}')
             user_token = f.create_custom_token(reciever_email)
             self.wfile.write(json.dumps({"token":user_token}).encode('utf-8'))
-        
+        else:
+            self.wfile.write(json.dumps({"error":"wrong login code entered."}).encode('utf-8'))
+
         return
