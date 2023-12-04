@@ -40,6 +40,8 @@ class firebase():
                 continue
             if isinstance(data[k], str):
                 parsed_data[k] = { "stringValue": data[k] }
+            if isinstance(data[k], float):
+                parsed_data[k] = { "doubleValue": data[k] }
         return parsed_data
 
     def create_document(self, id_token, db_name, collection_path, document_id, data):
@@ -62,6 +64,8 @@ class firebase():
         for k in data:
             if data[k].get('stringValue'):
                 deparsed_data[k] = data[k].get('stringValue')
+            if data[k].get('doubleValue'):
+                deparsed_data[k] = data[k].get('doubleValue')
         return deparsed_data
 
     def get_document(self, id_token, db_name, collection_path, document_id):
@@ -72,7 +76,10 @@ class firebase():
                 'Accept': 'application/json'
             }
         )
-        return self.firestore_deparse_data(r.text)
+        try:
+            return self.firestore_deparse_data(r.text)
+        except:
+            return None
 
     def delete_document(self, id_token, db_name, collection_path, document_id):
         r = requests.delete(
