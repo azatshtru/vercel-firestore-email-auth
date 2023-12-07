@@ -76,7 +76,6 @@ class firebase():
                 'Accept': 'application/json'
             }
         )
-        print(r)
         try:
             return self.firestore_deparse_data(r.text)
         except:
