@@ -31,6 +31,8 @@ class handler(BaseHTTPRequestHandler):
         f = firebase(firebase_config=firebase_config())
         token_id = f.generate_auth_id('serveradmin', claims={ 'admin': True })
         doc = f.get_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}')
+        print('what')
+        print(doc)
         if (doc is not None) and (time.time() - doc['timestamp'] < (AUTHCODE_EXPIRE_MINUTES*60)):
             self.wfile.write(json.dumps({"code":"LT5", "description": "server rate limits email sending to 5 minutes."}).encode('utf-8'))
             return
