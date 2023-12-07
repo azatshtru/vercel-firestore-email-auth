@@ -14,7 +14,7 @@ def send_email(emailconfig, reciever_email, body):
         server.login(emailconfig['sender_email'], password=emailconfig['password'])
         server.sendmail(emailconfig['sender_email'], reciever_email, body)
 
-def authmail_template(authcode, service_name, sender_address, reciever_address):
+def authmail_template(authcode, service_name, sender_address, reciever_address, expire_minutes=5):
     message = MIMEMultipart('alternative')
     message['Subject'] = f'Here is your login code for {service_name}.'
     message['From'] = sender_address
@@ -23,7 +23,9 @@ def authmail_template(authcode, service_name, sender_address, reciever_address):
     text = f"""\
 Your login code is: {authcode}.
 
-This email is sent by the cultofplaintext on behalf of {service_name}.
+This login code expires in {expire_minutes} minutes.
+
+This email is sent by thecultofplaintext on behalf of {service_name}.
 
 If you did not request this code, you can safely ignore this email. However it is possible that your mail-info was leaked, check haveibeenpwned.com for potential pwnages."""
 
@@ -32,7 +34,9 @@ If you did not request this code, you can safely ignore this email. However it i
     <body>
         <h3>Your login code is:</h3>
         <h1>{authcode}</h1>
-        <p>This email is sent by the cultofplaintext on behalf of {service_name}.</p>
+        <p>This login code expires in {expire_minutes} minutes.</p>
+        <br>
+        <p>This email is sent by thecultofplaintext on behalf of {service_name}.</p>
         <br>
         <p>If you did not request this code, you can safely ignore this email. However it is possible that your mail-info was leaked, check haveibeenpwned.com for potential pwnages.</p>
     </body>

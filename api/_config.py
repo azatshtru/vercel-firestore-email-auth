@@ -1,5 +1,7 @@
 import os
 
+AUTHCODE_EXPIRE_MINUTES = 5
+
 def firebase_config():
     return {
         'api_key': os.environ.get("FIREBASE_API_KEY"),

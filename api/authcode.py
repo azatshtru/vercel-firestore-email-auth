@@ -2,9 +2,10 @@ from http.server import BaseHTTPRequestHandler
 from urllib.parse import parse_qsl
 
 from _firebase import firebase
-from _config import firebase_config
+from _config import firebase_config, AUTHCODE_EXPIRE_MINUTES
 
 import json
+import time
 
 class handler(BaseHTTPRequestHandler):
 
@@ -26,13 +27,17 @@ class handler(BaseHTTPRequestHandler):
         f = firebase(firebase_config=firebase_config())
         token_id = f.generate_auth_id('serveradmin', claims={ 'admin': True })
         doc = f.get_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}')
-        
+
+        #check if email code is expired
+        if (time.time() - doc['timestamp']) > (AUTHCODE_EXPIRE_MINUTES+5)*60:
+            self.wfile.write(json.dumps({"error":"ERRE4E", "description":"recieved code was expired (e4e)"}).encode('utf-8'))
+            return
+
         #check if stored authcode matches the request's authcode
         if authcode == str(doc['authcode']):
-            f.delete_document(token_id, 'dash-12112', ['serverauth'], document_id=f'{reciever_email}')
             user_token = f.create_custom_token(reciever_email)
             self.wfile.write(json.dumps({"token":user_token}).encode('utf-8'))
         else:
-            self.wfile.write(json.dumps({"error":"wrong login code entered."}).encode('utf-8'))
+            self.wfile.write(json.dumps({"error":"ERRI7T", "description":"recieved code was incorrect (i7t)"}).encode('utf-8'))
 
         return

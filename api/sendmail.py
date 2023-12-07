@@ -3,7 +3,7 @@ from urllib.parse import parse_qsl
 
 from _firebase import firebase
 from _utils import *
-from _config import firebase_config, email_config
+from _config import firebase_config, email_config, AUTHCODE_EXPIRE_MINUTES
 
 import time
 
@@ -26,7 +26,7 @@ class handler(BaseHTTPRequestHandler):
         f = firebase(firebase_config=firebase_config())
         token_id = f.generate_auth_id('serveradmin', claims={ 'admin': True })
         doc = f.get_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}')
-        if (doc is not None) and (time.time() - doc['timestamp'] < 300):
+        if (doc is not None) and (time.time() - doc['timestamp'] < (AUTHCODE_EXPIRE_MINUTES*60)):
             return
         authcode = generate_random_authcode()
         f.delete_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}')
