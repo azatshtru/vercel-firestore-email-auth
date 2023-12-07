@@ -13,7 +13,7 @@ class handler(BaseHTTPRequestHandler):
         #send headers
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*') #change with website name after testing
+        self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
 
         #read authcode from request body
