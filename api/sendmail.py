@@ -1,9 +1,9 @@
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import parse_qsl
 
-from _firebase import firebase
-from _utils import *
-from _config import firebase_config, email_config, AUTHCODE_EXPIRE_MINUTES
+from api._utils._firebase import firebase
+from api._utils._utils import *
+from api._utils._config import firebase_config, email_config, AUTHCODE_EXPIRE_MINUTES
 
 import json
 import time
