@@ -31,6 +31,7 @@ class firebase():
             headers={'Content-type':'application/json'}
         )
         response = json.loads(r.text.replace("'", "\""))
+        print(response)
         return response['idToken']
 
     def firestore_parse_data(self, data):
