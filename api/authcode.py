@@ -29,7 +29,7 @@ class handler(BaseHTTPRequestHandler):
         doc = f.get_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}')
 
         #check if email code is expired
-        if (time.time() - doc['timestamp']) > (AUTHCODE_EXPIRE_MINUTES+5)*60:
+        if (time.time() - doc['timestamp']) > (AUTHCODE_EXPIRE_MINUTES+AUTHCODE_EXPIRE_MINUTES+2)*60:
             self.wfile.write(json.dumps({"error":"ERRE4E", "description":"recieved code was expired (e4e)"}).encode('utf-8'))
             return
 

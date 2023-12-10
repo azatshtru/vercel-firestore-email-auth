@@ -27,20 +27,27 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"code":"EMLNUL", "description":"invalid or no email recieved"}).encode('utf-8'))
             return
 
-        #generate authcode and store it in firestore under serverauth/{reciever_email} document
+        #rate limit if document made less than 5 minutes ago.
         f = firebase(firebase_config=firebase_config())
         token_id = f.generate_auth_id('serveradmin', claims={ 'admin': True })
         doc = f.get_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}')
         if (doc is not None) and (time.time() - doc['timestamp'] < (AUTHCODE_EXPIRE_MINUTES*60)):
+            if kv.get('altdevice'): #send another email with same authcode if different device
+                message = authmail_template(authcode=doc['authcode'], service_name='ryth', sender_address=email_config()['sender_email'], reciever_address=reciever_email, expire_minutes=4)
+                send_email(emailconfig=email_config(), reciever_email=reciever_email, body=message)
+                self.wfile.write(json.dumps({"code":"OK2", "description":"alternate device email sent successfully"}).encode('utf-8'))
+                return
+
             self.wfile.write(json.dumps({"code":"LT5", "description": "server rate limits email sending to 5 minutes."}).encode('utf-8'))
             return
+
+        #generate authcode and store it in firestore under serverauth/{reciever_email} document
         authcode = generate_random_authcode()
         f.delete_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}')
         f.create_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}', data={ 'authcode': authcode, 'timestamp': time.time() })
 
         #send the authcode to the reciever_email
-        service_name = 'ryth'
-        message = authmail_template(authcode=authcode, service_name=service_name, sender_address=email_config()['sender_email'], reciever_address=reciever_email)
+        message = authmail_template(authcode=authcode, service_name='ryth', sender_address=email_config()['sender_email'], reciever_address=reciever_email)
         send_email(emailconfig=email_config(), reciever_email=reciever_email, body=message)
 
         self.wfile.write(json.dumps({"code":"OK1", "description":"email sent successfully"}).encode('utf-8'))
