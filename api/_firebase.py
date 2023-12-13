@@ -43,7 +43,7 @@ class firebase():
             if isinstance(data[k], float):
                 parsed_data[k] = { "doubleValue": data[k] }
             if isinstance(data[k], int):
-                parsed_data[k] = { "integerValue": data[k] }
+                parsed_data[k] = { "integerValue": str(data[k]) }
         return parsed_data
 
     def create_document(self, id_token, db_name, collection_path, document_id, data):
@@ -69,7 +69,7 @@ class firebase():
             if data[k].get('doubleValue'):
                 deparsed_data[k] = data[k].get('doubleValue')
             if data[k].get('integerValue'):
-                deparsed_data[k] = data[k].get('integerValue')
+                deparsed_data[k] = int(data[k].get('integerValue'))
         return deparsed_data
 
     def get_document(self, id_token, db_name, collection_path, document_id):

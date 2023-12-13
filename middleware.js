@@ -22,5 +22,5 @@ export default async function middleware(request) {
 
     return success
         ? next()
-        : Response.json({errcode: "BLOCKD", description: "too many requests, try again later."}, {status: 429, statusText: "Too Many Requests"})
+        : Response.json({error: "BLOCKD", description: "too many requests, try again later."}, {status: 429, statusText: "Too Many Requests"})
 }
