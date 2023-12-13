@@ -10,7 +10,7 @@ const ratelimit = new Ratelimit({
 
 // Define which routes you want to rate limit
 export const config = {
-  matcher: '/api/sendmail',
+  matcher: '/api/:path*',
 }
 
 export default async function middleware(request) {
