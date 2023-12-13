@@ -95,7 +95,7 @@ class firebase():
         )
 
     def update_document(self, id_token, db_name, collection_path, document_id, data):
-        r = requests.post(
+        r = requests.patch(
             f"https://firestore.googleapis.com/v1/projects/{db_name}/databases/(default)/documents/{'/'.join(collection_path)}/{document_id}?updateMask.fieldPaths={'&updateMask.fieldPaths='.join(list(data.keys()))}&key={self.api_key}",
             headers={
                 'Authorization': f'Bearer {id_token}',
