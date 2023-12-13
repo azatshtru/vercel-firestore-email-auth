@@ -42,6 +42,8 @@ class firebase():
                 parsed_data[k] = { "stringValue": data[k] }
             if isinstance(data[k], float):
                 parsed_data[k] = { "doubleValue": data[k] }
+            if isinstance(data[k], int):
+                parsed_data[k] = { "integerValue": data[k] }
         return parsed_data
 
     def create_document(self, id_token, db_name, collection_path, document_id, data):
@@ -66,6 +68,8 @@ class firebase():
                 deparsed_data[k] = data[k].get('stringValue')
             if data[k].get('doubleValue'):
                 deparsed_data[k] = data[k].get('doubleValue')
+            if data[k].get('integerValue'):
+                deparsed_data[k] = data[k].get('integerValue')
         return deparsed_data
 
     def get_document(self, id_token, db_name, collection_path, document_id):
@@ -89,3 +93,17 @@ class firebase():
                 'Accept': 'application/json'
             }
         )
+
+    def update_document(self, id_token, db_name, collection_path, document_id, data):
+        r = requests.post(
+            f"https://firestore.googleapis.com/v1/projects/{db_name}/databases/(default)/documents/{'/'.join(collection_path)}?documentId={document_id}&updateMask.fieldPaths={'&updateMask.fieldPaths='.join(list(data.keys()))}&key={self.api_key}",
+            headers={
+                'Authorization': f'Bearer {id_token}',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            json={
+                "fields": self.firestore_parse_data(data)
+            }
+        )
+        return r.text

@@ -1,6 +1,7 @@
 import os
 
 AUTHCODE_EXPIRE_MINUTES = 5
+AUTHCODE_TRIAL_BUCKET = 3
 
 def firebase_config():
     return {

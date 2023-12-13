@@ -28,6 +28,18 @@ class handler(BaseHTTPRequestHandler):
         token_id = f.generate_auth_id('serveradmin', claims={ 'admin': True })
         doc = f.get_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}')
 
+        if not doc:
+            self.wfile.write(json.dumps({"error":"ERRN0F", "description":"no associated auth entry found. (n0f)"}).encode('utf-8'))
+            return
+
+        #check if wrong authcode entered multiple times in a row
+        bucket = doc['bucket']
+        if bucket < 1:
+            f.delete_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}')
+            self.wfile.write(json.dumps({"error":"ERRIXT", "description":"recieved code was incorrect multiple times in a row. (ixt)"}).encode('utf-8'))
+            return
+        f.update_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}', data={ 'bucket': bucket-1 })
+
         #check if email code is expired
         if (time.time() - doc['timestamp']) > (AUTHCODE_EXPIRE_MINUTES+AUTHCODE_EXPIRE_MINUTES+2)*60:
             self.wfile.write(json.dumps({"error":"ERRE4E", "description":"recieved code was expired (e4e)"}).encode('utf-8'))

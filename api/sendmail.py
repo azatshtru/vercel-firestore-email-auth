@@ -3,7 +3,7 @@ from urllib.parse import parse_qsl
 
 from api._firebase import firebase
 from api._utils import *
-from api._config import firebase_config, email_config, AUTHCODE_EXPIRE_MINUTES
+from api._config import firebase_config, email_config, AUTHCODE_EXPIRE_MINUTES, AUTHCODE_TRIAL_BUCKET
 
 import json
 import time
@@ -44,7 +44,7 @@ class handler(BaseHTTPRequestHandler):
         #generate authcode and store it in firestore under serverauth/{reciever_email} document
         authcode = generate_random_authcode()
         f.delete_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}')
-        f.create_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}', data={ 'authcode': authcode, 'timestamp': time.time() })
+        f.create_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}', data={ 'authcode': authcode, 'timestamp': time.time(), 'bucket': AUTHCODE_TRIAL_BUCKET })
 
         #send the authcode to the reciever_email
         message = authmail_template(authcode=authcode, service_name='ryth', sender_address=email_config()['sender_email'], reciever_address=reciever_email)
