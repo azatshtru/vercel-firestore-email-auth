@@ -106,4 +106,5 @@ class firebase():
                 "fields": self.firestore_parse_data(data)
             }
         )
+        print(r.text)
         return r.text

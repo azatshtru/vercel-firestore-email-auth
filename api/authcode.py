@@ -34,11 +34,12 @@ class handler(BaseHTTPRequestHandler):
 
         #check if wrong authcode entered multiple times in a row
         bucket = doc['bucket']
+        print(bucket, type(bucket))
         if bucket < 1:
             f.delete_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}')
             self.wfile.write(json.dumps({"error":"ERRIXT", "description":"recieved code was incorrect multiple times in a row. (ixt)"}).encode('utf-8'))
             return
-        f.update_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}', data={ 'bucket': bucket-1 })
+        f.update_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}', data={ 'bucket': int(bucket)-1 })
 
         #check if email code is expired
         if (time.time() - doc['timestamp']) > (AUTHCODE_EXPIRE_MINUTES+AUTHCODE_EXPIRE_MINUTES+2)*60:
