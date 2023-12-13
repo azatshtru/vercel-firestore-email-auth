@@ -43,7 +43,7 @@ class firebase():
             if isinstance(data[k], float):
                 parsed_data[k] = { "doubleValue": data[k] }
             if isinstance(data[k], int):
-                parsed_data[k] = { "integerValue": str(data[k]) }
+                parsed_data[k] = { "integerValue": data[k] }
         return parsed_data
 
     def create_document(self, id_token, db_name, collection_path, document_id, data):
@@ -96,7 +96,7 @@ class firebase():
 
     def update_document(self, id_token, db_name, collection_path, document_id, data):
         r = requests.post(
-            f"https://firestore.googleapis.com/v1/projects/{db_name}/databases/(default)/documents/{'/'.join(collection_path)}/documentId={document_id}&updateMask.fieldPaths={'&updateMask.fieldPaths='.join(list(data.keys()))}&key={self.api_key}",
+            f"https://firestore.googleapis.com/v1/projects/{db_name}/databases/(default)/documents/{'/'.join(collection_path)}/{document_id}&updateMask.fieldPaths={'&updateMask.fieldPaths='.join(list(data.keys()))}&key={self.api_key}",
             headers={
                 'Authorization': f'Bearer {id_token}',
                 'Accept': 'application/json',
