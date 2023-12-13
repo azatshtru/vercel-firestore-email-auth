@@ -5,7 +5,7 @@ import { Redis } from "@upstash/redis";
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
   // 5 requests from the same IP in 10 seconds
-  limiter: Ratelimit.slidingWindow(5, '10 s'),
+  limiter: Ratelimit.slidingWindow(2, '60 s'),
 })
 
 // Define which routes you want to rate limit
@@ -25,5 +25,5 @@ export default async function middleware(request) {
 
     return success
         ? next()
-        : Response.redirect(new URL('/blocked.html', request.url))
+        : Response.json({errcode: "BLOCKD", description: "too many requests, try again later."}, {status: 429, statusText: "Too Many Requests"})
 }
