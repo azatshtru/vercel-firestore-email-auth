@@ -23,8 +23,10 @@ class handler(BaseHTTPRequestHandler):
         authcode = kv['authcode']
         reciever_email = kv['email']
 
+        appcheck_token = self.headers.get('X-Firebase-AppCheck')
+
         #read stored authcode from firestore
-        f = firebase(firebase_config=firebase_config())
+        f = firebase(firebase_config=firebase_config(), appcheck_token=appcheck_token)
         token_id = f.generate_auth_id('serveradmin', claims={ 'admin': True })
         doc = f.get_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}')
 

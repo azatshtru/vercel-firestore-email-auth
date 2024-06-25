@@ -5,10 +5,11 @@ import json
 
 class firebase():
 
-    def __init__(self, firebase_config):
+    def __init__(self, firebase_config, appcheck_token):
         self.api_key = firebase_config['api_key']
         self.service_account_email = firebase_config['service_account_email']
         self.private_key = firebase_config['private_key']
+        self.appcheck_token = appcheck_token
 
     def create_custom_token(self, uid, claims={}):
         payload = {
@@ -28,7 +29,7 @@ class firebase():
         r = requests.post(
             f'https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key={self.api_key}',
             data=binary_data.encode('utf-8'),
-            headers={'Content-type':'application/json'}
+            headers={'Content-type':'application/json', 'X-Firebase-AppCheck':self.appcheck_token}
         )
         response = json.loads(r.text.replace("'", "\""))
         return response['idToken']
@@ -52,7 +53,8 @@ class firebase():
             headers={
                 'Authorization': f'Bearer {id_token}',
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-Firebase-AppCheck': self.appcheck_token
             },
             json={
                 "fields": self.firestore_parse_data(data)
@@ -77,7 +79,8 @@ class firebase():
             f"https://firestore.googleapis.com/v1/projects/{db_name}/databases/(default)/documents/{'/'.join(collection_path)}/{document_id}?key={self.api_key}",
             headers={
                 'Authorization': f'Bearer {id_token}',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'X-Firebase-AppCheck': self.appcheck_token
             }
         )
         try:
@@ -90,7 +93,8 @@ class firebase():
             f"https://firestore.googleapis.com/v1/projects/{db_name}/databases/(default)/documents/{'/'.join(collection_path)}/{document_id}?key={self.api_key}",
             headers={
                 'Authorization': f'Bearer {id_token}',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'X-Firebase-AppCheck': self.appcheck_token
             }
         )
 
@@ -100,7 +104,8 @@ class firebase():
             headers={
                 'Authorization': f'Bearer {id_token}',
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-Firebase-AppCheck': self.appcheck_token
             },
             json={
                 "fields": self.firestore_parse_data(data)

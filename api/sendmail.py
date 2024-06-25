@@ -27,8 +27,10 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"code":"EMLNUL", "description":"invalid or no email recieved"}).encode('utf-8'))
             return
 
+        appcheck_token = self.headers.get('X-Firebase-AppCheck')
+
         #rate limit if document made less than 5 minutes ago.
-        f = firebase(firebase_config=firebase_config())
+        f = firebase(firebase_config=firebase_config(), appcheck_token=appcheck_token)
         token_id = f.generate_auth_id('serveradmin', claims={ 'admin': True })
         doc = f.get_document(id_token=token_id, db_name='dash-12112', collection_path=['serverauth'], document_id=f'{reciever_email}')
         if (doc is not None) and (time.time() - doc['timestamp'] < (AUTHCODE_EXPIRE_MINUTES*60)):
