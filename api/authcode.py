@@ -17,7 +17,6 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Headers', '*')
         self.send_header('Access-Control-Expose-Headers', '*')
         self.send_header('Access-Control-Allow-Credentials', 'true')
-        self.send_header('Access-Control-Allow-Methods', 'POST')
         self.end_headers()
 
         #read authcode from request body
