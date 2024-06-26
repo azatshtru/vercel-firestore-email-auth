@@ -9,8 +9,7 @@ import time
 
 class handler(BaseHTTPRequestHandler):
 
-    def do_POST(self):
-        #send headers
+    def _set_headers(self):
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
         self.send_header('Access-Control-Allow-Origin', '*')
@@ -19,6 +18,14 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Expose-Headers', '*')
         self.send_header('Access-Control-Allow-Credentials', 'true')
         self.end_headers()
+
+    def do_OPTIONS(self):
+        self._set_headers()
+        self.end_headers()
+
+    def do_POST(self):
+        #send headers
+        self._set_headers()
 
         #read authcode from request body
         content_len = int(self.headers.get('Content-Length'))
