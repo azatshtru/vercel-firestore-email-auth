@@ -14,7 +14,8 @@ class handler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
         self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Headers', 'X-Firebase-AppCheck')
+        self.send_header('Access-Control-Allow-Headers', '*')
+        self.send_header('Access-Control-Expose-Headers', '*')
         self.end_headers()
 
         #read authcode from request body
